@@ -1,69 +1,66 @@
-# Prerequisites
-*.d
+# ── WebAssembly build output ─────────────────────────────────────────────────
+# If you regenerate these from source, don't commit the build artifacts
+# Comment these out if you want to ship prebuilt WASM to the repo
+public/engine.js
+public/engine.wasm
+public/engine.js.map
 
-# Compiled Object files
-*.slo
-*.lo
+# ── C++ build artifacts ───────────────────────────────────────────────────────
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-*.so.*
-
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
 *.a
-*.lib
-
-# Executables
-*.exe
 *.out
-*.app
-
-# Build directories
 build/
-Build/
-build-*/
-
-# CMake generated files
-CMakeFiles/
+dist/
+cmake-build-*/
 CMakeCache.txt
-cmake_install.cmake
+CMakeFiles/
 Makefile
-install_manifest.txt
-compile_commands.json
 
-# Temporary files
-*.tmp
-*.log
-*.bak
+# ── Emscripten cache ──────────────────────────────────────────────────────────
+.emscripten_cache/
+.emscripten
+
+# ── Node / npm (if using any JS tooling) ─────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# ── OS files ──────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
 *.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
-# vcpkg
-vcpkg_installed/
-
-# debug information files
-*.dwo
-
-# test output & cache
-Testing/
+# ── Logs & temp ───────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.temp
 .cache/
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Netlify ───────────────────────────────────────────────────────────────────
+.netlify/
