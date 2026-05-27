@@ -1,0 +1,19 @@
+# Build output
+math-analyser.exe
+mtha.exe
+*.o
+*.obj
+
+# Emscripten (local clone optional — usually in %USERPROFILE%\emsdk)
+emsdk/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep WASM artifacts (required for the app)
+!wasm/relation_engine.js
+!wasm/relation_engine.wasm

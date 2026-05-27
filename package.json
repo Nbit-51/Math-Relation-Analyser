@@ -1,0 +1,12 @@
+{
+  "name": "math-relation-analyser",
+  "version": "1.0.0",
+  "description": "Binary relation analyser with C++ WebAssembly engine",
+  "private": true,
+  "scripts": {
+    "build": "powershell -ExecutionPolicy Bypass -File ./build-wasm.ps1",
+    "build:native": "g++ -std=c++17 -O2 main.cpp -o math-analyser.exe",
+    "start": "npx --yes serve . -p 3000",
+    "setup": "powershell -ExecutionPolicy Bypass -File ./setup.ps1"
+  }
+}

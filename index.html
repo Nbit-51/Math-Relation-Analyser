@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en-GB" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Analyse binary relations on finite sets: properties, classifications, mappings, and mathematical inferences. C++ WebAssembly engine.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#185FA5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a18" media="(prefers-color-scheme: dark)">
+  <title>Math — Relation Analyser</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div id="engine-loader" class="engine-loader" role="status" aria-live="polite" data-state="loading">
+    <div class="loader-inner">
+      <div class="loader-spinner" aria-hidden="true"></div>
+      <p class="loader-text">Loading C++ analysis engine (WebAssembly)…</p>
+    </div>
+  </div>
+
+  <div id="sr-announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">Math <span class="logo-sub">Relation Analyser</span></div>
+      <div class="header-tag">Relation Properties · Matrix · Hasse Diagram</div>
+    </div>
+    <div id="engine-error-banner" class="engine-error-banner" role="alert" hidden></div>
+  </header>
+
+  <nav class="nav" role="tablist" aria-label="Course sections">
+    <button type="button" class="nav-btn active" id="tab-intro" data-section="intro" role="tab" aria-selected="true" aria-controls="sec-intro">01 · What is a Relation</button>
+    <button type="button" class="nav-btn" id="tab-properties" data-section="properties" role="tab" aria-selected="false" aria-controls="sec-properties" tabindex="-1">02 · Properties</button>
+    <button type="button" class="nav-btn" id="tab-types" data-section="types" role="tab" aria-selected="false" aria-controls="sec-types" tabindex="-1">03 · Types</button>
+    <button type="button" class="nav-btn" id="tab-mappings" data-section="mappings" role="tab" aria-selected="false" aria-controls="sec-mappings" tabindex="-1">04 · Mappings</button>
+    <button type="button" class="nav-btn" id="tab-analyser" data-section="analyser" role="tab" aria-selected="false" aria-controls="sec-analyser" tabindex="-1">05 · Analyser</button>
+    <button type="button" class="nav-btn" id="tab-hasse" data-section="hasse" role="tab" aria-selected="false" aria-controls="sec-hasse" tabindex="-1">06 · Hasse Diagram</button>
+  </nav>
+
+  <main id="main-content" class="container">
+
+    <!-- ── SECTION 1: INTRO ───────────────────────────────────── -->
+    <section class="section active" id="sec-intro" aria-labelledby="tab-intro">
+      <h2>What is a relation?</h2>
+      <p class="lead">A relation between two sets is a subset of their Cartesian product. It formalises the notion that elements from one set are "related to" elements of another (or the same) set.</p>
+
+      <div class="def-card">
+        <div class="label">Formal Definition</div>
+        <div class="title">Binary Relation</div>
+        <p>A binary relation R from set A to set B is a subset of the Cartesian product A × B. Each element of R is an ordered pair (a, b) where a ∈ A and b ∈ B.</p>
+        <div class="math-block">R ⊆ A × B &nbsp;⟺&nbsp; R = { (a, b) | a ∈ A, b ∈ B, a R b }</div>
+        <p>When A = B, we call it a relation on A (a homogeneous / endorelation).</p>
+      </div>
+
+      <h3>Key terminology</h3>
+      <div class="grid-2">
+        <div class="def-card">
+          <div class="label">Cartesian Product</div>
+          <p>A × B = { (a, b) | a ∈ A, b ∈ B }. If |A| = m and |B| = n, then |A × B| = mn. A relation R ⊆ A × B.</p>
+          <div class="math-block">A = {1,2}, B = {x,y}<br>A×B = {(1,x),(1,y),(2,x),(2,y)}</div>
+        </div>
+        <div class="def-card">
+          <div class="label">Domain & Range</div>
+          <p>The domain of R is the set of all first elements. The range (codomain) is the set of all second elements.</p>
+          <div class="math-block">Dom(R) = { a | (a,b) ∈ R }<br>Ran(R) = { b | (a,b) ∈ R }</div>
+        </div>
+        <div class="def-card">
+          <div class="label">Identity Relation</div>
+          <p>The identity relation I_A on A contains exactly the pairs (a, a) for every a in A. Every element relates only to itself.</p>
+          <div class="math-block">I_A = { (a, a) | a ∈ A }</div>
+        </div>
+        <div class="def-card">
+          <div class="label">Universal Relation</div>
+          <p>The universal relation U on A is A × A — every element relates to every other element including itself.</p>
+          <div class="math-block">U = A × A (all pairs)</div>
+        </div>
+      </div>
+
+      <h3>Representing relations</h3>
+      <div class="grid-3">
+        <div class="def-card">
+          <div class="label">Ordered Pairs</div>
+          <p>List the pairs explicitly:<br>R = {(1,1),(1,2),(2,3)}</p>
+        </div>
+        <div class="def-card">
+          <div class="label">Boolean Matrix</div>
+          <p>M[i][j] = 1 if (aᵢ, aⱼ) ∈ R, else 0. Rows = domain, columns = range.</p>
+        </div>
+        <div class="def-card">
+          <div class="label">Digraph</div>
+          <p>Directed graph: an arrow from a to b means (a,b) ∈ R. Self-loops represent reflexive pairs.</p>
+        </div>
+      </div>
+
+      <h3>Operations on relations</h3>
+      <div class="grid-2">
+        <div class="def-card">
+          <div class="label">Inverse / Converse</div>
+          <p>R⁻¹ swaps all pairs: if (a,b) ∈ R then (b,a) ∈ R⁻¹.</p>
+          <div class="math-block">R⁻¹ = { (b, a) | (a, b) ∈ R }</div>
+        </div>
+        <div class="def-card">
+          <div class="label">Composition</div>
+          <p>R∘S: (a,c) ∈ R∘S if ∃b such that (a,b)∈R and (b,c)∈S.</p>
+          <div class="math-block">R∘S = { (a,c) | ∃b: (a,b)∈R ∧ (b,c)∈S }</div>
+        </div>
+        <div class="def-card">
+          <div class="label">Closure</div>
+          <p>The smallest superrelation of R satisfying a given property (reflexive, symmetric, or transitive closure).</p>
+        </div>
+        <div class="def-card">
+          <div class="label">Complement</div>
+          <p>R̄ contains all pairs in A×A that are NOT in R.</p>
+          <div class="math-block">R̄ = (A × A) \ R</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: PROPERTIES ──────────────────────────────── -->
+    <section class="section" id="sec-properties" hidden aria-labelledby="tab-properties">
+      <h2>Properties of relations</h2>
+      <p class="lead">Relations on a set A ⊆ A × A can have structural properties. These properties determine how elements are related and what kind of structure the relation induces.</p>
+
+      <div class="grid-2">
+        <div class="prop-card">
+          <div class="prop-name">Reflexive</div>
+          <span class="prop-cond">∀a ∈ A: (a,a) ∈ R</span>
+          <p>Every element must relate to itself. The diagonal of the boolean matrix is all 1s.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-name">Irreflexive (Strict)</div>
+          <span class="prop-cond">∀a ∈ A: (a,a) ∉ R</span>
+          <p>No element relates to itself. Diagonal is all 0s. Mutually exclusive with reflexive (unless A = ∅).</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-name">Symmetric</div>
+          <span class="prop-cond">∀a,b: (a,b)∈R → (b,a)∈R</span>
+          <p>If a relates to b, then b relates to a. The boolean matrix equals its own transpose: M = Mᵀ.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-name">Antisymmetric</div>
+          <span class="prop-cond">∀a,b: (a,b)∈R ∧ (b,a)∈R → a=b</span>
+          <p>If a relates to b and b relates to a, they must be the same element. Symmetric ≠ not antisymmetric.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-name">Asymmetric</div>
+          <span class="prop-cond">∀a,b: (a,b)∈R → (b,a)∉R</span>
+          <p>Implies both irreflexive and antisymmetric. Strictly stronger than antisymmetric.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-name">Transitive</div>
+          <span class="prop-cond">∀a,b,c: (a,b)∈R ∧ (b,c)∈R → (a,c)∈R</span>
+          <p>If a→b and b→c then a→c must hold. Missing transitivity pairs are a common analyser finding.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-name">Total (Connex)</div>
+          <span class="prop-cond">∀a,b ∈ A: (a,b)∈R ∨ (b,a)∈R</span>
+          <p>Any two elements are comparable — at least one direction of the pair must exist.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-name">Trichotomous</div>
+          <span class="prop-cond">∀a≠b: exactly one of (a,b)∈R, (b,a)∈R, a=b</span>
+          <p>Strict total order of comparability. Exactly one of the three conditions holds for any distinct pair.</p>
+        </div>
+      </div>
+
+      <h3>Vacuous truth</h3>
+      <div class="def-card">
+        <div class="label">Important edge case</div>
+        <p>Many properties are universally quantified with a hypothesis. When the hypothesis is never satisfied, the property holds <em>vacuously</em>. The empty relation on any set is vacuously symmetric, transitive, and antisymmetric — because there are no pairs to violate those conditions.</p>
+      </div>
+
+      <h3>Property comparison table</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Property</th><th>Diagonal (a,a)</th><th>Off-diagonal condition</th><th>Matrix shape</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Reflexive</td>    <td class="tick">all 1</td><td>any</td>                         <td>diagonal all 1</td></tr>
+            <tr><td>Irreflexive</td>  <td class="cross">all 0</td><td>any</td>                        <td>diagonal all 0</td></tr>
+            <tr><td>Symmetric</td>    <td>any</td>              <td>M[i][j] = M[j][i]</td>           <td>M = Mᵀ</td></tr>
+            <tr><td>Antisymmetric</td><td>any</td>              <td>M[i][j]=1 → M[j][i]=0 (i≠j)</td><td>no sym off-diag 1-1 pair</td></tr>
+            <tr><td>Asymmetric</td>   <td class="cross">all 0</td><td>M[i][j]=1 → M[j][i]=0</td>    <td>irreflexive + antisym</td></tr>
+            <tr><td>Transitive</td>   <td>any</td>              <td>M² ≤ M (boolean)</td>            <td>M·M ⊆ M</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: TYPES ───────────────────────────────────── -->
+    <section class="section" id="sec-types" hidden aria-labelledby="tab-types">
+      <h2>Types of relations</h2>
+      <p class="lead">Combinations of properties yield named relation types, each with a distinct mathematical role — from structuring ordered sets to underpinning abstract algebra.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Type</th><th>Refl</th><th>Sym</th><th>Anti</th><th>Trans</th><th>Total</th><th>Role / Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Equivalence</strong> <span class="type-pill pill-eq">~</span></td>
+              <td class="tick">✓</td><td class="tick">✓</td><td class="dash">—</td><td class="tick">✓</td><td class="dash">—</td>
+              <td>Partitions A into equivalence classes [a]</td>
+            </tr>
+            <tr>
+              <td><strong>Partial Order</strong> <span class="type-pill pill-po">≤</span></td>
+              <td class="tick">✓</td><td class="dash">—</td><td class="tick">✓</td><td class="tick">✓</td><td class="dash">—</td>
+              <td>Poset (A, ≤). Elements may be incomparable.</td>
+            </tr>
+            <tr>
+              <td><strong>Strict Partial Order</strong> <span class="type-pill pill-po">&lt;</span></td>
+              <td class="cross">✗</td><td class="dash">—</td><td class="tick">✓</td><td class="tick">✓</td><td class="dash">—</td>
+              <td>Irreflexive + asymmetric + transitive</td>
+            </tr>
+            <tr>
+              <td><strong>Total Order</strong></td>
+              <td class="tick">✓</td><td class="dash">—</td><td class="tick">✓</td><td class="tick">✓</td><td class="tick">✓</td>
+              <td>Linear order — every pair comparable</td>
+            </tr>
+            <tr>
+              <td><strong>Strict Total Order</strong></td>
+              <td class="cross">✗</td><td class="dash">—</td><td class="tick">✓</td><td class="tick">✓</td><td class="tick">✓</td>
+              <td>Trichotomous — &lt; on integers/reals</td>
+            </tr>
+            <tr>
+              <td><strong>Preorder</strong></td>
+              <td class="tick">✓</td><td class="dash">—</td><td class="dash">—</td><td class="tick">✓</td><td class="dash">—</td>
+              <td>Reflexive + transitive. Weakest ordering.</td>
+            </tr>
+            <tr>
+              <td><strong>Tolerance</strong></td>
+              <td class="tick">✓</td><td class="tick">✓</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td>
+              <td>Reflexive + symmetric (no transitivity required)</td>
+            </tr>
+            <tr>
+              <td><strong>Quasiorder</strong></td>
+              <td class="cross">✗</td><td class="dash">—</td><td class="dash">—</td><td class="tick">✓</td><td class="dash">—</td>
+              <td>Irreflexive + transitive</td>
+            </tr>
+            <tr>
+              <td><strong>Empty Relation</strong></td>
+              <td class="cross">✗</td><td class="tick">vac</td><td class="tick">vac</td><td class="tick">vac</td><td class="dash">—</td>
+              <td>R = ∅. Vacuously sym, anti, trans.</td>
+            </tr>
+            <tr>
+              <td><strong>Universal Relation</strong></td>
+              <td class="tick">✓</td><td class="tick">✓</td><td class="dash">—</td><td class="tick">✓</td><td class="tick">✓</td>
+              <td>R = A×A. Also an equivalence relation.</td>
+            </tr>
+            <tr>
+              <td><strong>Identity Relation</strong></td>
+              <td class="tick">✓</td><td class="tick">✓</td><td class="tick">✓</td><td class="tick">✓</td><td class="cross">✗</td>
+              <td>R = {(a,a)|a∈A}. Both equiv + partial order.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Special named types</h3>
+      <div class="grid-2">
+        <div class="def-card">
+          <div class="label">Well-order</div>
+          <div class="title">Total Order + Well-Founded</div>
+          <p>A total order where every non-empty subset has a least element. Example: ℕ under ≤. Enables transfinite induction.</p>
+        </div>
+        <div class="def-card">
+          <div class="label">Dense Order</div>
+          <div class="title">Strict Total + Density</div>
+          <p>For any a &lt; b there exists c with a &lt; c &lt; b. Example: ℚ under &lt;. No "adjacent" elements exist.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: MAPPINGS ────────────────────────────────── -->
+    <section class="section mapping-section" id="sec-mappings" hidden aria-labelledby="tab-mappings">
+      <h2>Relations &amp; mappings</h2>
+      <p class="lead">A function (mapping) is a special kind of relation with the uniqueness constraint: each domain element relates to exactly one codomain element.</p>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-fn" data-accordion="fn" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-fn">
+          <span class="chevron" id="ch-fn">▶</span>
+          Function (Map / Mapping)
+          <span class="type-pill pill-fn" style="margin-left:auto">f: A → B</span>
+        </div>
+        <div class="map-body" id="bd-fn">
+          <p>A function f: A → B is a relation where every a ∈ A appears as a first element <em>exactly once</em>.</p>
+          <div class="math-block">∀a ∈ A, ∃! b ∈ B : (a,b) ∈ f</div>
+          <p>This is the uniqueness + totality condition. A relation is a function iff each row of its matrix has exactly one 1.</p>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-comp" data-accordion="comp" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-comp">
+          <span class="chevron" id="ch-comp">▶</span>
+          Composition of Relations
+        </div>
+        <div class="map-body" id="bd-comp">
+          <p>Given relations R ⊆ A×B and S ⊆ B×C, their composition S∘R ⊆ A×C contains (a,c) whenever there exists b ∈ B with (a,b)∈R and (b,c)∈S.</p>
+          <div class="math-block">S∘R = { (a,c) | ∃b ∈ B : (a,b)∈R ∧ (b,c)∈S }</div>
+          <p>Composition is associative: (T∘S)∘R = T∘(S∘R). For a relation R on A, powers R² = R∘R, R³ = R∘R∘R, etc. Transitivity holds iff R² ⊆ R (boolean matrix: M² ≤ M entrywise).</p>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-inj" data-accordion="inj" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-inj">
+          <span class="chevron" id="ch-inj">▶</span>
+          Injective (One-to-One)
+        </div>
+        <div class="map-body" id="bd-inj">
+          <p>f is injective if distinct inputs map to distinct outputs — no two elements share an image.</p>
+          <div class="math-block">f(a) = f(b) → a = b &nbsp;⟺&nbsp; a ≠ b → f(a) ≠ f(b)</div>
+          <p>Necessary for a function to have a left inverse. Each column of the function matrix has at most one 1.</p>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-surj" data-accordion="surj" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-surj">
+          <span class="chevron" id="ch-surj">▶</span>
+          Surjective (Onto)
+        </div>
+        <div class="map-body" id="bd-surj">
+          <p>f is surjective if every element in B is the image of at least one element in A. Range = Codomain.</p>
+          <div class="math-block">∀b ∈ B, ∃a ∈ A : f(a) = b</div>
+          <p>Necessary for a right inverse. Each column has at least one 1.</p>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-bij" data-accordion="bij" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-bij">
+          <span class="chevron" id="ch-bij">▶</span>
+          Bijective (One-to-One &amp; Onto)
+          <span class="type-pill pill-eq" style="margin-left:auto">isomorphism</span>
+        </div>
+        <div class="map-body" id="bd-bij">
+          <p>A bijection is both injective and surjective. It establishes a perfect pairing between A and B.</p>
+          <div class="math-block">f bijective ↔ ∃f⁻¹: B → A (two-sided inverse)</div>
+          <p>Bijections between finite sets require |A| = |B|. They define cardinality equality for infinite sets.</p>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-partial" data-accordion="partial" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-partial">
+          <span class="chevron" id="ch-partial">▶</span>
+          Partial Function
+        </div>
+        <div class="map-body" id="bd-partial">
+          <p>A partial function may leave some elements of A undefined. Each domain element maps to at most one codomain element.</p>
+          <div class="math-block">∀a ∈ A, ∃ at most one b ∈ B : (a,b) ∈ f</div>
+          <p>Common in computing: functions that may fail or be undefined (division, lookup, etc.).</p>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-eq-class" data-accordion="eq-class" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-eq-class">
+          <span class="chevron" id="ch-eq-class">▶</span>
+          Equivalence Classes &amp; Quotient Sets
+        </div>
+        <div class="map-body" id="bd-eq-class">
+          <p>Given an equivalence relation ~ on A, the equivalence class of a is:</p>
+          <div class="math-block">[a] = { x ∈ A | x ~ a }</div>
+          <p>The set of all equivalence classes {[a] | a ∈ A} forms a partition of A, called the quotient set A/~. The natural projection π: A → A/~ mapping a ↦ [a] is surjective.</p>
+          <div class="math-block">A = ⋃ [a], &nbsp; [a] ∩ [b] = ∅ or [a] = [b]</div>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div class="map-header" id="hdr-hasse" data-accordion="hasse" role="button" tabindex="0" aria-expanded="false" aria-controls="bd-hasse">
+          <span class="chevron" id="ch-hasse">▶</span>
+          Hasse Diagrams (Partial Orders)
+        </div>
+        <div class="map-body" id="bd-hasse">
+          <p>A Hasse diagram visualises a poset by drawing a line upward from a to b when a &lt; b and there is no c with a &lt; c &lt; b (no element "between" them). Reflexive and implied transitive pairs are omitted — only the covering relation is drawn.</p>
+          <div class="math-block">a ≺ b (a covered by b) ↔ a &lt; b ∧ ¬∃c: a &lt; c &lt; b</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: ANALYSER ────────────────────────────────── -->
+    <section class="section" id="sec-analyser" hidden aria-labelledby="tab-analyser">
+      <h2>Relation analyser</h2>
+      <p class="lead">Enter set <var>A</var> and relation <var>R</var> as ordered pairs. The C++ engine computes properties, classifies the relation, detects mappings, and explains its conclusions. <span id="engine-badge" class="engine-badge engine-loading">Initialising engine…</span></p>
+
+      <div class="analyser-layout">
+        <div class="panel">
+          <h3 class="panel-title">Input</h3>
+
+          <form id="analyser-form" novalidate>
+            <div class="field">
+              <label class="input-label" for="setA">Set <var>A</var> — elements (comma-separated)</label>
+              <input type="text" id="setA" name="setA" class="text-input" autocomplete="off" spellcheck="false"
+                     placeholder="1, 2, 3, 4" value="1, 2, 3" required
+                     aria-describedby="hint-format setA-hint">
+              <p id="setA-hint" class="field-hint">ISO 80000-2: elements separated by commas, e.g. 1, 2, 3</p>
+            </div>
+
+            <div class="field">
+              <label class="input-label" for="relR">Relation <var>R</var> — ordered pairs</label>
+              <textarea id="relR" name="relR" class="textarea-input" rows="5" spellcheck="false"
+                        placeholder="(1,1); (1,2); (2,2); (2,3); (1,3); (3,3)"
+                        aria-describedby="hint-format">(1,1); (2,2); (3,3); (1,2); (2,3); (1,3)</textarea>
+            </div>
+
+            <p id="hint-format" class="hint">Format: <code>(a,b); (c,d)</code> · semicolon or newline · elements must belong to <var>A</var> · max 12 elements</p>
+
+            <div class="examples" role="group" aria-label="Example relations">
+              <button type="button" class="example-btn" data-example="equiv">equivalence</button>
+              <button type="button" class="example-btn" data-example="partial">partial order</button>
+              <button type="button" class="example-btn" data-example="total">total order</button>
+              <button type="button" class="example-btn" data-example="sym">symmetric only</button>
+              <button type="button" class="example-btn" data-example="empty">empty</button>
+              <button type="button" class="example-btn" data-example="identity">identity</button>
+              <button type="button" class="example-btn" data-example="asymmetric">asymmetric</button>
+              <button type="button" class="example-btn" data-example="bijection">bijection</button>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn primary" id="btn-analyse" disabled>Analyse relation</button>
+              <button type="button" class="btn" id="btn-clear">Clear</button>
+            </div>
+
+            <div id="err" class="error-msg" role="alert" hidden></div>
+          </form>
+        </div>
+
+        <section class="panel" id="result-panel" aria-labelledby="results-heading" hidden>
+          <h3 id="results-heading" class="panel-title">Results</h3>
+          <div id="res-matrix"></div>
+          <hr class="divider">
+          <div id="res-props"></div>
+          <hr class="divider">
+          <div id="res-mapping"></div>
+          <hr class="divider">
+          <div id="res-operations"></div>
+          <hr class="divider">
+          <div id="res-hasse"></div>
+          <hr class="divider">
+          <div id="res-badges"></div>
+          <div id="res-inferences"></div>
+        </section>
+      </div>
+
+      <div class="matrix-tool panel" aria-labelledby="matrix-tool-heading">
+        <h3 id="matrix-tool-heading" class="panel-title">Relation matrix</h3>
+        <p class="tool-note">Build only the Boolean relation matrix from <var>A</var> and ordered pairs. The matrix entries come directly from the C++ engine.</p>
+
+        <form id="matrix-form" class="matrix-form" novalidate>
+          <div class="field">
+            <label class="input-label" for="matrixSetA">Set <var>A</var> — row/column order</label>
+            <input type="text" id="matrixSetA" name="matrixSetA" class="text-input" autocomplete="off" spellcheck="false"
+                   placeholder="1, 2, 3, 4" value="1, 2, 3, 4" required>
+          </div>
+
+          <div class="field">
+            <label class="input-label" for="matrixRelR">Ordered pairs</label>
+            <textarea id="matrixRelR" name="matrixRelR" class="textarea-input matrix-textarea" rows="3" spellcheck="false"
+                      placeholder="(1,2); (2,3); (3,4)">(1,2); (2,3); (3,4); (1,4)</textarea>
+          </div>
+
+          <div class="examples" role="group" aria-label="Matrix examples">
+            <button type="button" class="example-btn" data-matrix-example="partial">upper triangular</button>
+            <button type="button" class="example-btn" data-matrix-example="sym">symmetric</button>
+            <button type="button" class="example-btn" data-matrix-example="identity">identity</button>
+            <button type="button" class="example-btn" data-matrix-example="empty">zero matrix</button>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn primary" id="btn-matrix-analyse" disabled>Generate matrix</button>
+            <button type="button" class="btn" id="btn-matrix-clear">Clear</button>
+          </div>
+
+          <div id="matrix-err" class="error-msg" role="alert" hidden></div>
+        </form>
+
+        <section id="matrix-result-panel" class="matrix-result" aria-labelledby="matrix-result-heading" hidden>
+          <h3 id="matrix-result-heading" class="panel-title">Matrix output</h3>
+          <div id="matrix-output"></div>
+          <div id="matrix-details" class="matrix-details"></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: HASSE DIAGRAM ───────────────────────────── -->
+    <section class="section" id="sec-hasse" hidden aria-labelledby="tab-hasse">
+      <h2>Hasse diagram analyser</h2>
+      <p class="lead">Enter a relation on <var>A</var>. The analyser first checks whether it is a partial order, then removes reflexive and transitive edges to draw the covering relation.</p>
+
+      <div class="hasse-layout">
+        <div class="panel">
+          <h3 class="panel-title">Poset input</h3>
+
+          <form id="hasse-form" novalidate>
+            <div class="field">
+              <label class="input-label" for="hasseSetA">Set <var>A</var> — elements (comma-separated)</label>
+              <input type="text" id="hasseSetA" name="hasseSetA" class="text-input" autocomplete="off" spellcheck="false"
+                     placeholder="1, 2, 3, 4, 6, 12" value="1, 2, 3, 4, 6, 12" required>
+            </div>
+
+            <div class="field">
+              <label class="input-label" for="hasseRelR">Relation <var>R</var> — ordered pairs</label>
+              <textarea id="hasseRelR" name="hasseRelR" class="textarea-input" rows="6" spellcheck="false"
+                        placeholder="(1,1); (2,2); (1,2); (2,4)">(1,1); (2,2); (3,3); (4,4); (6,6); (12,12); (1,2); (1,3); (1,4); (1,6); (1,12); (2,4); (2,6); (2,12); (3,6); (3,12); (4,12); (6,12)</textarea>
+            </div>
+
+            <p class="hint">Works for partial orders: reflexive + antisymmetric + transitive. Cover edges are the pairs <code>a ≺ b</code> with no middle element.</p>
+
+            <div class="examples" role="group" aria-label="Hasse examples">
+              <button type="button" class="example-btn" data-hasse-example="divisibility">divisibility</button>
+              <button type="button" class="example-btn" data-hasse-example="partial">chain poset</button>
+              <button type="button" class="example-btn" data-hasse-example="identity">identity poset</button>
+              <button type="button" class="example-btn" data-hasse-example="sym">not a poset</button>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn primary" id="btn-hasse-analyse" disabled>Analyse Hasse diagram</button>
+              <button type="button" class="btn" id="btn-hasse-clear">Clear</button>
+            </div>
+
+            <div id="hasse-err" class="error-msg" role="alert" hidden></div>
+          </form>
+        </div>
+
+        <section class="panel hasse-panel" id="hasse-result-panel" aria-labelledby="hasse-results-heading" hidden>
+          <h3 id="hasse-results-heading" class="panel-title">Diagram</h3>
+          <div id="hasse-diagram" class="hasse-diagram"></div>
+          <hr class="divider">
+          <div id="hasse-details"></div>
+        </section>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>Math Relation Analyser &nbsp;·&nbsp; C++ WebAssembly Engine</span>
+  </footer>
+
+  <script src="js/engine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
